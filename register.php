@@ -20,7 +20,7 @@ require 'function.php';
     <!-- Own CSS -->
     <link rel="stylesheet" href="login.css">
 
-    <title>Login</title>
+    <title>Register</title>
 </head>
 
 <body>
@@ -47,8 +47,8 @@ require 'function.php';
             <div class="col-md-6 text-center login" style="background-image: url('assets/memphis-colorful.png');">
                 <h4 class="fw-bold">Register</h4>
                 <!-- Ini Error jika tidak bisa regsiter -->
-                <?php if (isset($error)) : ?>
-                    <?php echo '<script>alert("Username atau Password sudah digunakan!");</script>'; ?>
+                <?php if (isset($_GET['error'])): ?>
+                    <p style="color: red;"><?php echo htmlspecialchars($_GET['error']); ?></p>
                 <?php endif; ?>
                 <form action="process_register.php" method="post">
                     <div class="form-group user">
@@ -57,8 +57,10 @@ require 'function.php';
                     <div class="form-group my-5">
                         <input type="password" class="form-control w-50" placeholder="Masukkan Password" name="password" autocomplete="off" required>
                     </div>
-                    <button class="btn btn-primary text-uppercase" type="submit" name="register">register</button>
+                    <button class="btn btn-primary text-uppercase" type="submit" name="register">Register</button>
                 </form>
             </div>
         </div>
     </div>
+</body>
+</html>
