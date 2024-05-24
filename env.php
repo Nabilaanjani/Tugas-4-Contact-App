@@ -24,4 +24,6 @@ if (!function_exists('parseEnv')) {
 
 // Panggil fungsi untuk membaca file .env
 parseEnv(__DIR__ . '/.env');
-?>
+
+// Mulai sesi dengan pengaturan khusus jika diperlukan
+session_start();
