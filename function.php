@@ -3,30 +3,27 @@
 require 'env.php';
 
 // Sekarang variabel lingkungan dari file .env sudah tersedia untuk digunakan
-$db_host = $_ENV['localhost'];
-$db_name = $_ENV['phpcrud'];
-$db_user = $_ENV['root'];
+$db_host = $_ENV['DB_HOST'];
+$db_name = $_ENV['DB_NAME'];
+$db_user = $_ENV['DB_USER'];
+$db_pass = $_ENV['DB_PASS'];
 
-// Koneksi Database
-$koneksi = mysqli_connect("localhost", "root", "", "phpcrud");
+// Koneksi Database menggunakan mysqli
+$koneksi = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 
 // Memeriksa koneksi
 if (!$koneksi) {
     die("Koneksi gagal: " . mysqli_connect_error());
 }
 
-// membuat fungsi query dalam bentuk array
+// Membuat fungsi query dalam bentuk array
 function query($query)
 {
-    // Koneksi database
     global $koneksi;
 
     $result = mysqli_query($koneksi, $query);
 
-    // membuat varibale array
     $rows = [];
-
-    // mengambil semua data dalam bentuk array
     while ($row = mysqli_fetch_assoc($result)) {
         $rows[] = $row;
     }
@@ -45,7 +42,7 @@ function tambah($data)
     $jurusan = htmlspecialchars($data['jurusan']);
     $semester = htmlspecialchars($data['semester']);
 
-    $sql = "INSERT INTO mahasiswa(nim, nama, kelas, jurusan, semester) VALUES ('$nim','$nama','$kelas','$jurusan','$semester')";
+    $sql = "INSERT INTO mahasiswa (nim, nama, kelas, jurusan, semester) VALUES ('$nim', '$nama', '$kelas', '$jurusan', '$semester')";
 
     mysqli_query($koneksi, $sql);
 
@@ -77,5 +74,41 @@ function ubah($data)
     mysqli_query($koneksi, $sql);
 
     return mysqli_affected_rows($koneksi);
+}
+
+// Membuat fungsi login
+function login($username, $password)
+{
+    global $koneksi;
+
+    $stmt = mysqli_prepare($koneksi, "SELECT id, password FROM users WHERE username = ?");
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $id, $hashed_password);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+
+    if (password_verify($password, $hashed_password)) {
+        session_start();
+        $_SESSION['user_id'] = $id;
+        return true;
+    } else {
+        return false;
+    }
+}
+// Membuat fungsi register
+function register($username, $password)
+{
+    global $koneksi;
+
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = mysqli_prepare($koneksi, "INSERT INTO users (username, password) VALUES (?, ?)");
+    mysqli_stmt_bind_param($stmt, "ss", $username, $hashed_password);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_affected_rows($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $result;
 }
 ?>
