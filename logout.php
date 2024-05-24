@@ -1,9 +1,14 @@
 <?php
 session_start();
-$_SESSION = [];
-session_unset();
-session_destroy();
-// Session dihapus dan logout
 
-header('location: index.php');
-    // kembali ke index.php
+// Pastikan pengguna sudah login sebelum melakukan logout
+if (isset($_SESSION['login'])) {
+    // Hapus semua variabel sesi
+    $_SESSION = [];
+    // Hapus sesi
+    session_unset();
+    session_destroy();
+}
+
+// Setelah logout, arahkan kembali pengguna ke halaman login
+header('location: login.php');
