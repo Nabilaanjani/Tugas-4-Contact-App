@@ -13,24 +13,17 @@ require 'function.php';
 // jika tombol yang bernama login diklik
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
-    $password = md5($_POST['password']);
-    // password menggunakan md5
+    $password = $_POST['password'];
 
-    // mengambil data
-    $result = mysqli_query($koneksi, "SELECT * FROM users WHERE username = '$username'");
-
-    $cek = mysqli_num_rows($result);
-
-    if ($cek > 0) {
+    // Memeriksa kredensial pengguna
+    if (login($username, $password)) {
         $_SESSION['login'] = true;
-
         header('location:index.php');
         exit;
+    } else {
+        $error = true;
     }
- 
-    $error = true;  
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +69,7 @@ if (isset($_POST['login'])) {
                 <h4 class="fw-bold">Login</h4>
                 <!-- Ini Error jika tidak bisa login -->
                 <?php if (isset($error)) : ?>
-                    <?php echo '<script>alert("Username atau Password Salah!");</script>'; ?>
+                    <p style="color: red;">Username atau Password Salah!</p>
                 <?php endif; ?>
                 <form action="" method="post">
                     <div class="form-group user">
