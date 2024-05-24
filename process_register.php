@@ -3,14 +3,28 @@
 require 'env.php';
 require 'function.php';
 
-$username = $_POST['username'];
-$password = md5($_POST['password']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
+    // Pengecekan kelengkapan data
+    if (empty($username) || empty($password)) {
+        $error = 'Please fill in all fields.';
+        header('Location: register.php?error=' . urlencode($error));
+        exit;
+    }
 
-//pengecekan kelengkapan data
-if (empty($username) || empty($password)) {
-    header("location: register.php");
+    // Registrasi pengguna baru
+    if (register($username, $password) > 0) {
+        header('Location: login.php');
+        exit;
+    } else {
+        $error = 'Registration failed. Username might already be taken.';
+        header('Location: register.php?error=' . urlencode($error));
+        exit;
+    }
 } else {
-    mysqli_query($koneksi, "INSERT INTO users (username, password) VALUES ('$username', '$password')");
-    header("location: index.php");
+    header('Location: register.php');
+    exit;
 }
+?>
